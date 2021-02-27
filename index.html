@@ -90,44 +90,32 @@ min(1 + max(table[i - 1][k - 1], table[i][j - k])) where k = 1 to j
 
 <h4 id="java-code-for-finding-the-highest-safe-floor">Java code for finding the highest safe floor</h4>
 
-<pre>public class EggDropping {
-    static int findFloor(int n, int k) {
-        // n: number of eggs
-        // k: number of floors
-        int[][] memo = new int[n + 1][k + 1];
-        // initialize
-        // 0 trial for 0th floor
-        // 1 trial for 1st floor
-        for (int i = 1; i &lt;= n; i++) {
-            memo[i][0] = 0;
-            memo[i][1] = 1;
-        }
-        // in case of only one egg is given
-        for (int i = 1; i &lt;= k; i++) {
-            memo[1][i] = i;
-        }
+<pre><code><xmp>import java.util.HashMap;
+import java.util.Map;
 
-        // fill the rest
-        for (int i = 2; i &lt;= n; i++) {
-            for (int j = 2; j &lt;= k; j++) {
-                int minimum = Integer.MAX_VALUE;
-                for (int x = 1; x &lt;= j; x++) {
-                    int temp = 1 + Math.max(memo[i - 1][x - 1], memo[i][j - x]);
-                    minimum = Math.min(minimum, temp);
-                }
-                memo[i][j] = minimum;
-            }
-        }
-        return memo[n][k];
+public class EggDroppingPuzzle {
+    static int eggDrop(int N, int K) {
+        return eggDrop(N, K, new HashMap<>());
+    }
+
+    static int eggDrop(int eggs, int floors, Map<String, Integer> memo) {
+        String key = eggs + "," + floors;
+        if (memo.containsKey(key)) return memo.get(key);
+        if (eggs == 1 || floors == 0 || floors == 1) return floors;
+
+        int highestSafeFloor = Integer.MAX_VALUE;
+        for (int floor = 1; floor <= floors; floor++)
+            highestSafeFloor = Math.min(highestSafeFloor,
+                    1 + Math.max(eggDrop(eggs - 1, floor - 1, memo), eggDrop(eggs, floors - floor, memo)));
+
+        memo.put(key, highestSafeFloor);
+        return highestSafeFloor;
     }
 
     public static void main(String[] args) {
-        int n, k;
-        n = 2;
-        k = 36;
-        System.out.println(findFloor(n, k));
+        System.out.println("For Eggs N = 2 and Floors K = 36 -> " + eggDrop(2, 36));
     }
-}</pre>
+}</xmp></code></pre>
 
 
 <p>Above prints:</p>
